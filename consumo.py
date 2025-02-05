@@ -101,12 +101,20 @@ class ConsumoVIew:
                 # Mostrar resultados de la API en la segunda grilla
                 for empleado in empleados:
                     self.tree_api.insert("", "end", values=(empleado['empleado_Pnombre'],empleado['empleado_Papellido'],empleado['horganizacional_Nom_Posicion'],empleado['horganizacional_Nom_Cargo'],empleado['empleado_Cen3']))
-                    self.arreglos_empleados.append(empleado['empleado_Pnombre'])
-                    self.arreglos_empleados.append(empleado['empleado_Papellido'])
-                    self.arreglos_empleados.append(empleado['horganizacional_Nom_Posicion'])
+                    self.arreglos_empleados.append(empleado['empleado_Sucursal'])
+                    self.arreglos_empleados.append(empleado['tipo_Empleado_Tipo'])
+                    self.arreglos_empleados.append(empleado['empleado_Posicion'])
+                    self.arreglos_empleados.append(empleado['horganizacional_Cargo'])
                     self.arreglos_empleados.append(empleado['horganizacional_Nom_Cargo'])
+                    self.arreglos_empleados.append(empleado['empleado_Empleado'])
+                    self.arreglos_empleados.append(empleado['horganizacional_Nom_Unidad'])
+                    self.arreglos_empleados.append(empleado['horganizacional_Nom_Posicion'])
                     self.arreglos_empleados.append(empleado['empleado_Cen3'])
-                    
+                    self.arreglos_empleados.append(empleado['centro_Costo3_Desc_Cen3'])
+                    self.arreglos_empleados.append(empleado['tipo_Empleado_Desc_Tipo_Emp'])
+                    self.arreglos_empleados.append(empleado['sucursal_Desc_Sucursal'])
+                    self.arreglos_empleados.append(empleado['horganizacional_Nom_Emp'])
+
                 messagebox.showinfo("Éxito", "Datos obtenidos correctamente.")
             else:
                 messagebox.showerror("Error", f"Error en la solicitud: {data.status_code}")
@@ -121,9 +129,9 @@ class ConsumoVIew:
             #captura nuevamente la cedula para usarla de condicionals
             cedula = self.cedula_entry.get()
             cedula = str(cedula)
-            
             #manda el update a sql local
-            cursor.execute("update PERSONAL_SINERGY set CCOSTO3 = (%s),nomposicion = (%s),NOMCARGEMPL= (%s)  where id = (%s)",(str(self.arreglos_empleados[4]),str(self.arreglos_empleados[2]),str(self.arreglos_empleados[3]),cedula))
+            cursor.execute("exec [SP_ACTUALIZA_EMPLEADO] %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",(str(self.arreglos_empleados[0]),str(self.arreglos_empleados[1]),str(self.arreglos_empleados[2]),str(self.arreglos_empleados[3]),str(self.arreglos_empleados[4]),cedula,str(self.arreglos_empleados[6]),str(self.arreglos_empleados[7]),str(self.arreglos_empleados[8]),str(self.arreglos_empleados[9]),str(self.arreglos_empleados[10]),str(self.arreglos_empleados[11]),str(self.arreglos_empleados[12])))
+            #cursor.execute("update PERSONAL_SINERGY set CCOSTO3 = (%s),nomposicion = (%s),NOMCARGEMPL= (%s)  where id = (%s)",(str(self.arreglos_empleados[4]),str(self.arreglos_empleados[2]),str(self.arreglos_empleados[3]),cedula))
             # Confirma los cambios 
             cursor.connection.commit()
             #enviar a s48
@@ -159,7 +167,7 @@ class ConsumoVIew:
                 # Muestra un mensaje de éxito
             messagebox.showinfo("Éxito", "Datos actualizados correctamente.")
         except Exception as e:
-            messagebox.showinfo("Falla", "Error: " + e)
+            messagebox.showinfo("Falla", "Error: " + str(e))
             f = open('e:/log_prueba.txt','a+')
             f.write('--------------------------ejecucion fallida' + str(self.hoy) + '------------------------------------------ \n')
             f.write(str(e)+ '\n')
